@@ -1,6 +1,20 @@
 require (stabledist)
 require (gtools)
 
+hp_lse <- defmacro (y, x, expr={
+  X <- matrix (rep(1, 2*length(x)), ncol=2);
+  X[,2] <- x;
+  Y <- matrix (y, ncol=1);
+  
+  XtX <- t(X) %*% X;
+  
+  theta <- solve (XtX) %*% t(X) %*% Y;
+  yhat <- X %*% theta;
+  
+  sum ((Y - yhat)^2);
+})
+
+
 hp_stableparams <- function (obs, method=c("q", "likelihood")) { # obs is a vector of observations
   ptm <- proc.time()
   
@@ -22,8 +36,7 @@ hp_stableparams <- function (obs, method=c("q", "likelihood")) { # obs is a vect
       a = 1
     }
     qtheoretical <- qstable (alpha=a, p=probs, beta=0.0)
-    md <- lm (qd~qtheoretical)
-    sum ((md$residuals)^2)
+    hp_lse (qd, qtheoretical)
   }
   
   
