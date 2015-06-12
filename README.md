@@ -2,7 +2,7 @@
 We noticed that `stableFit{fBasics}` 
 was fast but inaccurate in "quantile" mode, and very slow albeit somewhat
 more accurate in "MLE" mode; so we wrote
-our own code for estimating the parameter of a location-scale symmetric stable
+our own code for estimating the parameters of a location-scale symmetric stable
 model from data which is faster than stableFit and almost as accurate.
 
 ## R code
