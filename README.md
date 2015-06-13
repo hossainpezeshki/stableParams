@@ -12,7 +12,8 @@ is a short program for testing the former.
 
 The file hp_stable.R is a function for simulating vectors of symmetric stable
 random variates of a specified index, and the testhp_stable.R is
-a simple program for testing hp_stable.R
+a simple program for testing the former function. We use the algorithm described
+on page 166 of Bratley et al. "A Guide to Simulation, 2nd Edition".
 
 
 ## Copyright notice

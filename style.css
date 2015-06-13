@@ -1,0 +1,19 @@
+/* Arial, Helvetica, sans-serif */
+/* "Lucida Console", Monaco, monospace */
+
+body, td{
+  font-family: "Lucida Console";
+  font-size: 12pt;
+  line-height: 150%;
+}
+
+code.r {
+  font-family: "Courier New";
+  font-size: 12pt;
+}
+
+/* Headers */
+h1,h2,h3,h4,h5,h6{
+  font-size: 20pt;
+  font_weight: bold;
+}
