@@ -104,22 +104,23 @@ s_{\mbox{init}} =
 <div id="implementation-and-testing" class="section level1">
 <h1>Implementation and testing</h1>
 <p>Our R function <code>hp_stableparams</code> implements the above procedure.</p>
-<pre class="r"><code>require (stabledist)
-require (gtools)
-
-hp_lse &lt;- defmacro (y, x, expr={
+<pre class="r"><code>require (stabledist)</code></pre>
+<pre><code>## Loading required package: stabledist</code></pre>
+<pre class="r"><code>require (gtools)</code></pre>
+<pre><code>## Loading required package: gtools</code></pre>
+<pre class="r"><code>hp_lse &lt;- function (y, x) {
   X &lt;- matrix (rep(1, 2*length(x)), ncol=2);
   X[,2] &lt;- x;
   Y &lt;- matrix (y, ncol=1);
   
   XtX &lt;- t(X) %*% X;
   
-  theta &lt;- solve (XtX) %*% t(X) %*% Y;
+  theta &lt;- solve (XtX) %*% (t(X) %*% Y);
   yhat &lt;- X %*% theta;
   
-  sum ((Y - yhat)^2);
-})
-
+  temp = sum ((Y - yhat)^2);
+  temp
+}
 
 hp_stableparams &lt;- function (obs, method=c(&quot;q&quot;, &quot;likelihood&quot;)) {
   # obs is a vector of observations
@@ -165,10 +166,10 @@ hp_stableparams &lt;- function (obs, method=c(&quot;q&quot;, &quot;likelihood&qu
     # The following function is the log pdf for a random variable
     # Y = l + s * X where X is a symmetric stable r.v. with characterisitic
     # index alpha as index
-    logpdf &lt;- defmacro (x, Location, Scale, alpha, 
-                      expr= {temp = (x - Location) / Scale;
+    logpdf &lt;- function (x, Location, Scale, alpha) {
+                temp = (x - Location) / Scale;
                              temp = log (dstable (temp, alpha, beta=0.0)) - log (Scale);
-                             temp;})
+                             temp;}
   
     targetLS &lt;- function (init_guess, #initial guess at location and scale
                       x, alpha) {
@@ -207,12 +208,21 @@ str=sprintf (&quot;By hp_stableparams (%s method): alpha = %.3f, location = %.3f
                result$method, result$alpha_hat, result$Location_hat, result$Scale_hat)
 print (result$compute.time)</code></pre>
 <pre><code>## elapsed 
-##   38.87</code></pre>
+##  38.291</code></pre>
 <pre class="r"><code>str</code></pre>
 <pre><code>## [1] &quot;By hp_stableparams (likelihood method): alpha = 1.181, location = 1.908, scale = 4.600&quot;</code></pre>
-<pre class="r"><code>library (fBasics)
-
-ptm &lt;-proc.time()
+<pre class="r"><code>library (fBasics)</code></pre>
+<pre><code>## Loading required package: timeDate
+## Loading required package: timeSeries
+## 
+## 
+## Rmetrics Package fBasics
+## Analysing Markets and calculating Basic Statistics
+## Copyright (C) 2005-2014 Rmetrics Association Zurich
+## Educational Software for Financial Engineering and Computational Science
+## Rmetrics is free software and comes with ABSOLUTELY NO WARRANTY.
+## https://www.rmetrics.org --- Mail to: info@rmetrics.org</code></pre>
+<pre class="r"><code>ptm &lt;-proc.time()
 sf &lt;- stableFit (x = obs, beta=0, doplot=FALSE, type=&quot;mle&quot;)
 sf &lt;- attributes (sf)
 ptm &lt;- proc.time() - ptm
@@ -220,7 +230,7 @@ str=sprintf (&quot;By stableFit (q method): alpha = %.3f, location = %.3f, scale
                sf$fit$estimate[1], sf$fit$estimate[4], sf$fit$estimate[3])
 print (ptm[&quot;elapsed&quot;])</code></pre>
 <pre><code>## elapsed 
-##  95.757</code></pre>
+##  95.051</code></pre>
 <pre class="r"><code>str</code></pre>
 <pre><code>## [1] &quot;By stableFit (q method): alpha = 1.232, location = 1.577, scale = 4.650&quot;</code></pre>
 <p>We see that our procedure produces more accurate results in less than half the time take by <code>stableFit</code>.</p>

@@ -92,21 +92,34 @@ Our R function `hp_stableparams` implements the above procedure.
 
 ```r
 require (stabledist)
-require (gtools)
+```
 
-hp_lse <- defmacro (y, x, expr={
+```
+## Loading required package: stabledist
+```
+
+```r
+require (gtools)
+```
+
+```
+## Loading required package: gtools
+```
+
+```r
+hp_lse <- function (y, x) {
   X <- matrix (rep(1, 2*length(x)), ncol=2);
   X[,2] <- x;
   Y <- matrix (y, ncol=1);
   
   XtX <- t(X) %*% X;
   
-  theta <- solve (XtX) %*% t(X) %*% Y;
+  theta <- solve (XtX) %*% (t(X) %*% Y);
   yhat <- X %*% theta;
   
-  sum ((Y - yhat)^2);
-})
-
+  temp = sum ((Y - yhat)^2);
+  temp
+}
 
 hp_stableparams <- function (obs, method=c("q", "likelihood")) {
   # obs is a vector of observations
@@ -152,10 +165,10 @@ hp_stableparams <- function (obs, method=c("q", "likelihood")) {
     # The following function is the log pdf for a random variable
     # Y = l + s * X where X is a symmetric stable r.v. with characterisitic
     # index alpha as index
-    logpdf <- defmacro (x, Location, Scale, alpha, 
-                      expr= {temp = (x - Location) / Scale;
+    logpdf <- function (x, Location, Scale, alpha) {
+				temp = (x - Location) / Scale;
                              temp = log (dstable (temp, alpha, beta=0.0)) - log (Scale);
-                             temp;})
+                             temp;}
   
     targetLS <- function (init_guess, #initial guess at location and scale
                       x, alpha) {
@@ -201,7 +214,7 @@ print (result$compute.time)
 
 ```
 ## elapsed 
-##   38.87
+##  38.291
 ```
 
 ```r
@@ -214,7 +227,22 @@ str
 
 ```r
 library (fBasics)
+```
 
+```
+## Loading required package: timeDate
+## Loading required package: timeSeries
+## 
+## 
+## Rmetrics Package fBasics
+## Analysing Markets and calculating Basic Statistics
+## Copyright (C) 2005-2014 Rmetrics Association Zurich
+## Educational Software for Financial Engineering and Computational Science
+## Rmetrics is free software and comes with ABSOLUTELY NO WARRANTY.
+## https://www.rmetrics.org --- Mail to: info@rmetrics.org
+```
+
+```r
 ptm <-proc.time()
 sf <- stableFit (x = obs, beta=0, doplot=FALSE, type="mle")
 sf <- attributes (sf)
@@ -226,7 +254,7 @@ print (ptm["elapsed"])
 
 ```
 ## elapsed 
-##  95.757
+##  95.051
 ```
 
 ```r
